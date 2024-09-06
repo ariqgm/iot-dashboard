@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IoT Dashboard - Proteksi Listrik</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #FFF8F3;
+      color: #405D72;
+    }
+    .navbar {
+      background-color: #405D72;
+      color: #FFF8F3;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+    .navbar .navbar-brand, .navbar .nav-link {
+      color: #FFF8F3 !important;
+    }
+    .navbar .nav-link.active {
+      background-color: #758694;
+    }
+    .content {
+      padding: 70px 20px 20px 20px;
+    }
+    .card {
+      margin-bottom: 20px;
+      background-color: #F7E7DC;
+      border: 1px solid #758694;
+    }
+    .relay-status {
+      padding: 15px;
+      margin: 10px;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 1.2em;
+      color: #FFF8F3;
+      background-color: green;
+    }
+    .relay-normal {
+      background-color: green;
+    }
+    .relay-warning {
+      background-color: #f4ce14;
+    }
+    .relay-overload {
+      background-color: darkorange;
+    }
+    .relay-trip-overload {
+      background-color: red;
+    }
+    .table th, .table td {
+      color: #405D72;
+      text-align: center; /* Ensure all text is centered */
+    }
+    .table thead th {
+      background-color: #758694;
+      color: #FFF8F3;
+      text-align: center;
+    }
+    .table-responsive {
+      max-height: 400px; 
+      overflow-y: scroll;
+    }
+    .chart-container {
+      position: relative;
+      height: 400px;
+      width: 100%;
+      background-color: #F0F0F0; /* Set a contrasting background color */
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .digital-clock {
+      border: 1px solid #405D72;
+      background-color: #FFF8F3;
+      color: #405D72;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 1.2em;
+      display: inline-block;
+      float: right;
+    }
+    .relay-normal-bg {
+      background-color: green !important;
+      color: white !important; /* Menjamin teks terlihat */
+    }
+
+    .relay-warning-bg {
+      background-color: #f4ce14 !important;
+      color: black !important; /* Menjamin teks terlihat */
+    }
+
+    .relay-overload-bg {
+      background-color: darkorange !important;
+      color: white !important; /* Menjamin teks terlihat */
+    }
+
+    .relay-trip-overload-bg {
+      background-color: red !important;
+      color: white !important; /* Menjamin teks terlihat */
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">IoT Dashboard</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html" id="statusListrikLink">Status Listrik</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="proteksi_digital.html" id="proteksiListrikLink">Proteksi Listrik</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="smarhome.html" id="smartHomeLink">Smart Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="data_logger.html" id="data_logger">Data Logger</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="content">
+    <div>
+      <h1 class="mt-5" style="display: inline;">Proteksi Listrik</h1>
+      <div class="digital-clock" id="digitalClock" style="display: inline;"></div>
+    </div>
+  
+    <div class="row justify-content-center mt-4 d-flex">
+      <div class="card">
+          <div class="card-header text-center">Data Real-time</div>
+          <div class="card-body text-center">
+              <div class="chart-container mx-auto justify-content-center" style="width: 50vw;">
+                  <canvas id="currentChart" style="max-width: 100%;"></canvas>
+              </div>
+              <div class="row justify-content-center mt-4">
+                  <div class="col-md-2">
+                      <div id="relayStatusBox" class="relay-status">NORMAL</div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+    <div class="row mt-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header text-center">Data History</div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Device ID</th>
+                    <th scope="col">Current</th>
+                    <th scope="col">Relay Status</th>
+                    <th scope="col">Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody id="historyData">
+                  <!-- Data dari database akan ditampilkan di sini -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <script src="https://cdn.jsdelivr.net/npm/socket.io/client-dist/socket.io.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const socket = io();
+      const navLinks = document.querySelectorAll('.nav-link');
+      const clockElement = document.getElementById('digitalClock');
+      const relayStatusBox = document.getElementById('relayStatusBox');
+      const ctx = document.getElementById('currentChart').getContext('2d');
+      
+      let currentChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Current',
+            data: [],
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+            backgroundColor: 'rgba(0, 0, 0, 0.1)', /* Chart background color */
+            fill: true
+          }]
+        },
+        options: {
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                unit: 'minute'
+              },
+              title: {
+                display: true,
+                text: 'Waktu (t)',
+                font: {
+                  weight: 'bold',
+                  size: 16
+                },
+                color: '#000000'
+              }
+            },
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Arus (A)',
+                font: {
+                  weight: 'bold',
+                  size: 16
+                },
+                color: '#000000'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          navLinks.forEach(nav => nav.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+
+      console.log('Connecting to socket.io...');
+
+      socket.on('connect', () => {
+        console.log('Connected to socket.io server');
+      });
+
+      socket.on('mqttDataProteksi', function (message) {
+        console.log('Received data:', message);
+        const { topic, data } = message;
+        if (topic === 'proteksi_digital') {
+          // Update current chart
+          currentChart.data.labels.push(new Date());
+          currentChart.data.datasets[0].data.push(data.current);
+
+          // Keep only data from the last 15 minutes
+          const fifteenMinutesAgo = Date.now() - 15 * 60 * 1000;
+          currentChart.data.labels = currentChart.data.labels.filter((label, index) => {
+            return new Date(label).getTime() > fifteenMinutesAgo;
+          });
+          currentChart.data.datasets[0].data = currentChart.data.datasets[0].data.slice(-currentChart.data.labels.length);
+
+          currentChart.update();
+
+          // Save data to localStorage
+          localStorage.setItem('currentChartData', JSON.stringify(currentChart.data));
+
+          // Update relay status box
+          relayStatusBox.innerText = data.relay_status;
+          switch(data.relay_status) {
+            case 'NORMAL':
+              relayStatusBox.className = 'relay-status relay-normal';
+              break;
+            case 'WARNING_OVERLOAD':
+              relayStatusBox.className = 'relay-status relay-warning';
+              break;
+            case 'OVERLOAD':
+              relayStatusBox.className = 'relay-status relay-overload';
+              break;
+            case 'TRIP_OVERLOAD':
+              relayStatusBox.className = 'relay-status relay-trip-overload';
+              break;
+            default:
+              relayStatusBox.className = 'relay-status relay-normal';
+          }
+        }
+      });
+
+      socket.on('requesthistoryProteksiData', function(data) {
+  const historyTable = document.getElementById('historyData');
+  historyTable.innerHTML = ''; // Clear existing data
+  data.forEach(row => {
+    const tr = document.createElement('tr');
+    tr.dataset.relayStatus = row.relay_status;
+    tr.innerHTML = `
+      <td>${row.device_id}</td>
+      <td>${row.current}</td>
+      <td>${row.relay_status}</td>
+      <td>${convertToLocalTime(row.timestamp)}</td>
+    `;
+    historyTable.appendChild(tr);
+        // Set background color based on relay_status
+        switch(tr.dataset.relayStatus) {
+      case 'NORMAL':
+        tr.classList.add('relay-normal-bg');
+        break;
+      case 'WARNING_OVERLOAD':
+        tr.classList.add('relay-warning-bg');
+        break;
+      case 'OVERLOAD':
+        tr.classList.add('relay-overload-bg');
+        break;
+      case 'TRIP_OVERLOAD':
+        tr.classList.add('relay-trip-overload-bg');
+        break;
+      default:
+        tr.classList.add('relay-normal-bg'); // Default case, for safety
+    }
+  });
+});
+
+      socket.on('disconnect', () => {
+        console.log('Disconnected from socket.io server');
+      });
+
+      function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        clockElement.textContent = `${hours}:${minutes}:${seconds}`;
+      }
+
+      setInterval(updateClock, 1000);
+      updateClock(); // Initial call to display clock immediately
+
+      // Load data from localStorage
+      const savedData = localStorage.getItem('currentChartData');
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        const fifteenMinutesAgo = Date.now() - 15 * 60 * 1000;
+
+        // Filter data to keep only the last 15 minutes
+        parsedData.labels = parsedData.labels.filter((label, index) => {
+          return new Date(label).getTime() > fifteenMinutesAgo;
+        });
+        parsedData.datasets[0].data = parsedData.datasets[0].data.slice(-parsedData.labels.length);
+
+        currentChart.data = parsedData;
+        currentChart.update();
+      }
+
+      // Fungsi log waktu UTC+7 (WIB)
+      const logDateNow = () => {
+        const date = new Date();
+        const utcOffset = 7 * 60 * 60 * 1000; // UTC+7 (WIB)
+        const indonesiaTime = new Date(date.getTime() + utcOffset);
+        console.log("Current Date and Time (WIB):", indonesiaTime.toISOString().replace("T", " ").split(".")[0]);
+      };
+
+      // Memanggil fungsi log date secara berkala
+      setInterval(logDateNow, 1000); // Setiap 1 detik
+
+      function convertToLocalTime(utcTime) {
+        const date = new Date(utcTime);
+        const options = {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          timeZone: 'Asia/Jakarta',
+        };
+
+        // Mengonversi waktu ke WIB
+        const formattedDate = date.toLocaleString('id-ID', options);
+        
+        // Mendapatkan milidetik secara manual
+        const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
+
+        // Menggabungkan hasil dengan milidetik
+        return `${formattedDate}:${milliseconds}`;
+}
+
+      // Fetch history data periodically
+      setInterval(() => {
+        socket.emit('requesthistoryProteksiData');
+      }, 5000); // every 5 seconds
+    });
+  </script>
+</body>
+</html>

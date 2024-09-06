@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IoT Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #FFF8F3;
+      color: #405D72;
+    }
+    .navbar {
+      background-color: #405D72;
+      color: #FFF8F3;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+    .navbar .navbar-brand, .navbar .nav-link {
+      color: #FFF8F3 !important;
+    }
+    .navbar .nav-link.active {
+      background-color: #758694;
+    }
+    .content {
+      padding: 70px 20px 20px 20px;
+    }
+    .card {
+      margin-bottom: 20px;
+      background-color: #F7E7DC;
+      border: 1px solid #758694;
+    }
+    .chart-container {
+      background-color: #ffffff; /* Set a contrasting background color */
+      padding: 10px;
+      border-radius: 10px;
+      height: 60vh;
+    }
+    .data-box {
+      border: 1px solid #405D72;
+      background-color: #758694;
+      color: #FFF8F3;
+      padding: 15px;
+      margin: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+    .data-box p {
+      margin: 0;
+    }
+    .data-box strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 1.1em;
+    }
+    .table th, .table td {
+      color: #405D72;
+    }
+    .table thead th {
+      background-color: #758694;
+      color: #FFF8F3;
+      text-align: center;
+    }
+    .table-striped tbody tr:nth-of-type(odd) {
+      background-color: #F7E7DC;
+    }
+    .table-striped tbody tr:nth-of-type(even) {
+      background-color: #FFF8F3;
+    }
+    .digital-clock {
+      border: 1px solid #405D72;
+      background-color: #FFF8F3;
+      color: #405D72;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 1.2em;
+      display: inline-block;
+    }
+    .table-responsive {
+      max-height: 400px; /* Set the height as per your need */
+      overflow-y: scroll;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">IoT Dashboard</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="status_listrik.html" id="statusListrikLink">Status Listrik</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="proteksi_digital.html" id="proteksiListrikLink">Proteksi Listrik</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="smarhome.html" id="smartHomeLink">Smart Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="data_logger.html" id="data_logger">Data Logger</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="content">
+    <div>
+      <h1 class="mt-5" style="display: inline;">Status Daya Beban Listrik</h1>
+      <div class="digital-clock" id="digitalClock" style="display: inline;"></div>
+    </div>
+  
+    <div class="row justify-content-center mt-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header text-center">Data Real-time</div>
+          <div class="card-body text-center">
+            <div class="row justify-content-center">
+              <div class="col-md-2 data-box">
+                <strong>Tegangan</strong>
+                <p id="tegangan">0 V</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Tegangan S</strong>
+                <p id="teganganS">0 V</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Tegangan T</strong>
+                <p id="teganganT">0 V</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Tegline 1</strong>
+                <p id="tegline1">0 V</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Tegline 2</strong>
+                <p id="tegline2">0 V</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Tegline 3</strong>
+                <p id="tegline3">0 V</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Arus</strong>
+                <p id="arus">0 A</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Arus S</strong>
+                <p id="arusS">0 A</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Arus T</strong>
+                <p id="arusT">0 A</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Power Factor R</strong>
+                <p id="powerFactorR">0</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Power Factor S</strong>
+                <p id="powerFactorS">0</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Power Factor T</strong>
+                <p id="powerFactorT">0</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Daya Aktif</strong>
+                <p id="dayaaktif">0 kW</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Daya Reaktif</strong>
+                <p id="dayareaktif">0 kVAR</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Frekuensi R</strong>
+                <p id="freqR">0 Hz</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Frekuensi S</strong>
+                <p id="freqS">0 Hz</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Frekuensi T</strong>
+                <p id="freqT">0 Hz</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>kWh</strong>
+                <p id="kwH">0 kWh</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Energi</strong>
+                <p id="energi">0 kWh</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Tagihan</strong>
+                <p id="tagihan">0 IDR</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div>
+              <div class="card-body text-center">
+                <h3>Grafik Data Real-Time</h3>
+                <div class="chart-container justify-content-center" style="width: 100%;">
+                    <canvas id="currentChart" width="100%""></canvas>
+                </div>
+            </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header text-center">Data History</div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">Timestamp</th>
+                    <th scope="col">Tegangan</th>
+                    <th scope="col">Tegangan S</th>
+                    <th scope="col">Tegangan T</th>
+                    <th scope="col">Tegline 1</th>
+                    <th scope="col">Tegline 2</th>
+                    <th scope="col">Tegline 3</th>
+                    <th scope="col">Arus</th>
+                    <th scope="col">Arus S</th>
+                    <th scope="col">Arus T</th>
+                    <th scope="col">Power Factor R</th>
+                    <th scope="col">Power Factor S</th>
+                    <th scope="col">Power Factor T</th>
+                    <th scope="col">Daya Aktif</th>
+                    <th scope="col">Daya Reaktif</th>
+                    <th scope="col">Frekuensi R</th>
+                    <th scope="col">Frekuensi S</th>
+                    <th scope="col">Frekuensi T</th>
+                    <th scope="col">kWh</th>
+                    <th scope="col">Energi</th>
+                    <th scope="col">Tagihan</th>
+                  </tr>
+                </thead>
+                <tbody id="historyData">
+                  <!-- Data dari database akan ditampilkan di sini -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <script src="socket.io/socket.io.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const socket = io();
+      const navLinks = document.querySelectorAll('.nav-link');
+      const clockElement = document.getElementById('digitalClock');
+      fetchDataAndDrawChart();
+      setInterval(fetchDataAndDrawChart, 5000); // Refresh chart setiap 5 detik
+
+      navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          navLinks.forEach(nav => nav.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+
+      console.log('Connecting to socket.io...');
+
+      socket.on('connect', () => {
+        console.log('Connected to socket.io server');
+      });
+
+      socket.on('mqttDataStatusDaya', function (message) {
+        console.log('Received data:', message);
+        const { topic, data } = message;
+
+        if (!data) {
+          console.error('Data is undefined');
+          return;
+        }
+        
+        // Update each dataset with the corresponding data
+        switch (topic) {
+          case 'Status_Daya_Beban_Listrik/part1':
+            document.getElementById('tegangan').innerText = `${data.tegangan} V`;
+            document.getElementById('teganganS').innerText = `${data.teganganS} V`;
+            document.getElementById('teganganT').innerText = `${data.teganganT} V`;
+            break;
+          case 'Status_Daya_Beban_Listrik/part2':
+            document.getElementById('tegline1').innerText = `${data.tegline1} V`;
+            document.getElementById('tegline2').innerText = `${data.tegline2} V`;
+            document.getElementById('tegline3').innerText = `${data.tegline3} V`;
+            break;
+          case 'Status_Daya_Beban_Listrik/part3':
+            document.getElementById('arus').innerText = `${data.arus} A`;
+            document.getElementById('arusS').innerText = `${data.arusS} A`;
+            document.getElementById('arusT').innerText = `${data.arusT} A`;
+            break;
+          case 'Status_Daya_Beban_Listrik/part4':
+            document.getElementById('powerFactorR').innerText = data.powerFactorR;
+            document.getElementById('powerFactorS').innerText = data.powerFactorS;
+            document.getElementById('powerFactorT').innerText = data.powerFactorT;
+            break;
+          case 'Status_Daya_Beban_Listrik/part5':
+            document.getElementById('dayaaktif').innerText = `${data.dayaaktif} kW`;
+            document.getElementById('dayareaktif').innerText = `${data.dayareaktif} kVAR`;
+            document.getElementById('freqR').innerText = `${data.freqR} Hz`;
+            document.getElementById('freqS').innerText = `${data.freqS} Hz`;
+            document.getElementById('freqT').innerText = `${data.freqT} Hz`;
+            break;
+          case 'Status_Daya_Beban_Listrik/part6':
+            document.getElementById('kwH').innerText = `${data.kwH} kWh`;
+            document.getElementById('energi').innerText = `${data.energi} kWh`;
+            document.getElementById('tagihan').innerText = `${data.tagihan} IDR`;
+            break;
+          default:
+            console.warn('Unknown topic:', topic);
+        }
+      });
+
+      socket.on('requesthistoryStatusListrikData', function(data) {
+        const historyTable = document.getElementById('historyData');
+        historyTable.innerHTML = ''; // Clear existing data
+        data.forEach(row => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${row.timestamp}</td>
+            <td>${row.tegangan}</td>
+            <td>${row.teganganS}</td>
+            <td>${row.teganganT}</td>
+            <td>${row.tegline1}</td>
+            <td>${row.tegline2}</td>
+            <td>${row.tegline3}</td>
+            <td>${row.arus}</td>
+            <td>${row.arusS}</td>
+            <td>${row.arusT}</td>
+            <td>${row.powerFactorR}</td>
+            <td>${row.powerFactorS}</td>
+            <td>${row.powerFactorT}</td>
+            <td>${row.dayaaktif}</td>
+            <td>${row.dayareaktif}</td>
+            <td>${row.freqR}</td>
+            <td>${row.freqS}</td>
+            <td>${row.freqT}</td>
+            <td>${row.kwH}</td>
+            <td>${row.energi}</td>
+            <td>${row.tagihan}</td>
+          `;
+          historyTable.appendChild(tr);
+        });
+      });
+
+      socket.on('disconnect', () => {
+        console.log('Disconnected from socket.io server');
+      });
+
+      function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        clockElement.textContent = `${hours}:${minutes}:${seconds}`;
+      }
+
+      let myChart;
+
+function fetchDataAndDrawChart() {
+  fetch('/api/data15menit')
+    .then(response => response.json())
+    .then(data => {
+      console.log('Fetched Data:', data);  // Tambahkan ini untuk memeriksa data
+      if (!data || data.length === 0) {
+        console.warn('No data available to display on chart.');
+        return;
+      }
+
+      data.forEach(entry => {
+        console.log(`Timestamp: ${entry.timestamp}, Tegangan: ${entry.tegangan}`);
+      });
+
+      const timestamps = data.map(entry => entry.timestamp);
+      const datasets = [
+        {
+          label: 'Tegangan',
+          data: data.map(entry => entry.tegangan),
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Tegangan S',
+          data: data.map(entry => entry.teganganS),
+          borderColor: 'rgba(192, 75, 192, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(192, 75, 192, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Tegangan T',
+          data: data.map(entry => entry.teganganT),
+          borderColor: 'rgba(192, 192, 75, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(192, 192, 75, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Tegline 1',
+          data: data.map(entry => entry.tegline1),
+          borderColor: 'rgba(75, 75, 192, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(75, 75, 192, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Tegline 2',
+          data: data.map(entry => entry.tegline2),
+          borderColor: 'rgba(192, 75, 75, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(192, 75, 75, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Tegline 3',
+          data: data.map(entry => entry.tegline3),
+          borderColor: 'rgba(75, 192, 75, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(75, 192, 75, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Arus',
+          data: data.map(entry => entry.arus),
+          borderColor: 'rgba(75, 75, 75, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(75, 75, 75, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Arus S',
+          data: data.map(entry => entry.arusS),
+          borderColor: 'rgba(75, 0, 130, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(75, 0, 130, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Arus T',
+          data: data.map(entry => entry.arusT),
+          borderColor: 'rgba(240, 128, 128, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(240, 128, 128, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Power Factor R',
+          data: data.map(entry => entry.powerFactorR),
+          borderColor: 'rgba(255, 165, 0, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(255, 165, 0, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Power Factor S',
+          data: data.map(entry => entry.powerFactorS),
+          borderColor: 'rgba(128, 0, 128, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(128, 0, 128, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Power Factor T',
+          data: data.map(entry => entry.powerFactorT),
+          borderColor: 'rgba(0, 255, 255, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(0, 255, 255, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Daya Aktif',
+          data: data.map(entry => entry.dayaaktif),
+          borderColor: 'rgba(255, 69, 0, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(255, 69, 0, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Daya Reaktif',
+          data: data.map(entry => entry.dayareaktif),
+          borderColor: 'rgba(0, 100, 0, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(0, 100, 0, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Frekuensi R',
+          data: data.map(entry => entry.freqR),
+          borderColor: 'rgba(0, 0, 139, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(0, 0, 139, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Frekuensi S',
+          data: data.map(entry => entry.freqS),
+          borderColor: 'rgba(189, 183, 107, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(189, 183, 107, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Frekuensi T',
+          data: data.map(entry => entry.freqT),
+          borderColor: 'rgba(139, 69, 19, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(139, 69, 19, 0.2)',
+          fill: true
+        },
+        {
+          label: 'kWh',
+          data: data.map(entry => entry.kwH),
+          borderColor: 'rgba(65, 105, 225, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(65, 105, 225, 0.2)',
+          fill: true
+        },
+        {
+          label: 'Energi',
+          data: data.map(entry => entry.energi),
+          borderColor: 'rgba(219, 112, 147, 1)',
+          borderWidth: 1,
+          backgroundColor: 'rgba(219, 112, 147, 0.2)',
+          fill: true
+        }
+      ];
+
+      console.log('Timestamps:', timestamps);  // Memeriksa timestamps
+      console.log('Datasets:', datasets);  // Memeriksa datasets
+
+      const ctx = document.getElementById('currentChart').getContext('2d');
+      
+      // Hancurkan grafik sebelumnya jika ada
+      if (myChart) {
+        myChart.destroy();
+      }
+
+      myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: timestamps,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    })
+    .catch(error => console.error('Failed to fetch data:', error));
+}
+
+
+      setInterval(updateClock, 1000);
+      updateClock(); // Initial call to display clock immediately
+
+      // Fetch history data periodically
+      setInterval(() => {
+        socket.emit('requesthistoryStatusListrikData');
+      }, 5000); // every 5 seconds
+    });
+  </script>
+</body>
+</html>
