@@ -79,7 +79,7 @@
       float: right;
     }
     .table-responsive {
-      max-height: 400px; /* Set the height as per your need */
+      max-height: 400px;
       overflow-y: scroll;
     }
   </style>
@@ -117,13 +117,119 @@
       <h1 class="mt-5" style="display: inline;">Monitoring Daya Beban Listrik</h1>
       <div class="digital-clock" id="digitalClock" style="display: inline;"></div>
     </div>
-  
+
+    <!-- Real-Time Data Boxes -->
     <div class="row justify-content-center mt-4">
       <div class="col-md-12">
         <div class="card">
           <div class="card-header text-center">Data Real-time</div>
           <div class="card-body text-center">
-            <!-- Data real-time tampilan -->
+            <div class="row justify-content-center">
+              <div class="col-md-2 data-box">
+                <strong>Tegangan</strong>
+                <p id="tegangan">0 V</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Tegangan S</strong>
+                <p id="teganganS">0 V</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Tegangan T</strong>
+                <p id="teganganT">0 V</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Tegline 1</strong>
+                <p id="tegline1">0 V</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Tegline 2</strong>
+                <p id="tegline2">0 V</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Tegline 3</strong>
+                <p id="tegline3">0 V</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Arus</strong>
+                <p id="arus">0 A</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Arus S</strong>
+                <p id="arusS">0 A</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Arus T</strong>
+                <p id="arusT">0 A</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Power Factor R</strong>
+                <p id="powerFactorR">0</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Power Factor S</strong>
+                <p id="powerFactorS">0</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Power Factor T</strong>
+                <p id="powerFactorT">0</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Daya Aktif</strong>
+                <p id="dayaaktif">0 kW</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Daya Reaktif</strong>
+                <p id="dayareaktif">0 kVAR</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Frekuensi R</strong>
+                <p id="freqR">0 Hz</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Frekuensi S</strong>
+                <p id="freqS">0 Hz</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Frekuensi T</strong>
+                <p id="freqT">0 Hz</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>kWh</strong>
+                <p id="kwH">0 kWh</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Energi</strong>
+                <p id="energi">0 kWh</p>
+              </div>
+              <div class="col-md-2 data-box">
+                <strong>Tagihan</strong>
+                <p id="tagihan">0 IDR</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- New Charts for kWh and Energi -->
+    <div class="row justify-content-center mt-4">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header text-center">Grafik kWh</div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="kWhChart" width="100%" height="50"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header text-center">Grafik Energi</div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="energyChart" width="100%" height="50"></canvas>
+            </div>
           </div>
         </div>
       </div>
@@ -182,10 +288,99 @@
     document.addEventListener('DOMContentLoaded', function() {
       const socket = io();
       const clockElement = document.getElementById('digitalClock');
+      const kWhCtx = document.getElementById('kWhChart').getContext('2d');
+      const energyCtx = document.getElementById('energyChart').getContext('2d');
 
+      // Initialize the new kWh and Energi charts
+      let kWhChart = new Chart(kWhCtx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'kWh',
+            data: [],
+            borderColor: 'rgba(0, 191, 255, 1)',
+            backgroundColor: 'rgba(0, 191, 255, 0.2)',
+            fill: true
+          }]
+        },
+        options: {
+          scales: {
+            x: { 
+              type: 'time', 
+              time: { unit: 'minute' },
+              title: { display: true, text: 'Time' }
+            },
+            y: { 
+              beginAtZero: true,
+              title: { display: true, text: 'kWh' }
+            }
+          }
+        }
+      });
+
+      let energyChart = new Chart(energyCtx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Energi',
+            data: [],
+            borderColor: 'rgba(138, 43, 226, 1)',
+            backgroundColor: 'rgba(138, 43, 226, 0.2)',
+            fill: true
+          }]
+        },
+        options: {
+          scales: {
+            x: { 
+              type: 'time', 
+              time: { unit: 'minute' },
+              title: { display: true, text: 'Time' }
+            },
+            y: { 
+              beginAtZero: true,
+              title: { display: true, text: 'Energi (kWh)' }
+            }
+          }
+        }
+      });
+
+      function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        clockElement.textContent = `${hours}:${minutes}:${seconds}`;
+      }
+
+      setInterval(updateClock, 1000);
+      updateClock(); // Initial call to display clock immediately
+
+      // Update real-time data and the new charts
       socket.on('mqttDataStatusDaya', function (message) {
-        console.log('Received data:', message);
-        // Update data real-time dan grafik
+        const { topic, data } = message;
+        const timestamp = new Date();
+
+        // Add data to the charts for kWh and Energi
+        if (topic === 'Status_Daya_Beban_Listrik/part6') {
+          kWhChart.data.labels.push(timestamp);
+          kWhChart.data.datasets[0].data.push({ x: timestamp, y: data.kwH });
+
+          energyChart.data.labels.push(timestamp);
+          energyChart.data.datasets[0].data.push({ x: timestamp, y: data.energi });
+
+          // Limit data to last 15 minutes
+          const fifteenMinutesAgo = Date.now() - 15 * 60 * 1000;
+          kWhChart.data.labels = kWhChart.data.labels.filter(label => new Date(label).getTime() > fifteenMinutesAgo);
+          kWhChart.data.datasets[0].data = kWhChart.data.datasets[0].data.filter(dataPoint => new Date(dataPoint.x).getTime() > fifteenMinutesAgo);
+
+          energyChart.data.labels = energyChart.data.labels.filter(label => new Date(label).getTime() > fifteenMinutesAgo);
+          energyChart.data.datasets[0].data = energyChart.data.datasets[0].data.filter(dataPoint => new Date(dataPoint.x).getTime() > fifteenMinutesAgo);
+
+          kWhChart.update();
+          energyChart.update();
+        }
       });
 
       socket.on('requesthistoryStatusListrikData', function(data) {
@@ -194,7 +389,7 @@
         data.forEach(row => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td>${convertToLocalTime(row.timestamp)}</td>
+            <td>${row.timestamp}</td>
             <td>${row.tegangan}</td>
             <td>${row.teganganS}</td>
             <td>${row.teganganT}</td>
@@ -220,59 +415,9 @@
         });
       });
 
-      socket.on('disconnect', () => {
-        console.log('Disconnected from socket.io server');
-      });
-
-      function updateClock() {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        clockElement.textContent = `${hours}:${minutes}:${seconds}`;
-      }
-
-      setInterval(updateClock, 1000);
-      updateClock(); // Initial call to display clock immediately
-
-      // Fungsi konversi UTC ke WIB
-      function convertToLocalTime(utcTime) {
-        const date = new Date(utcTime);
-        const options = {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          timeZone: 'Asia/Jakarta',
-        };
-
-        // Mengonversi waktu ke WIB
-        const formattedDate = date.toLocaleString('id-ID', options);
-        
-        // Mendapatkan milidetik secara manual
-        const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
-
-        // Menggabungkan hasil dengan milidetik
-        return `${formattedDate}:${milliseconds}`;
-      }
-
-      // Fungsi log waktu UTC+7 (WIB)
-      const logDateNow = () => {
-        const date = new Date();
-        const utcOffset = 7 * 60 * 60 * 1000; // UTC+7 (WIB)
-        const indonesiaTime = new Date(date.getTime() + utcOffset);
-        console.log("Current Date and Time (WIB):", indonesiaTime.toISOString().replace("T", " ").split(".")[0]);
-      };
-
-      // Memanggil fungsi log date secara berkala
-      setInterval(logDateNow, 1000); // Setiap 1 detik
-
-      // Fetch history data periodically
       setInterval(() => {
         socket.emit('requesthistoryStatusListrikData');
-      }, 5000); // every 5 second
+      }, 5000);
     });
   </script>
 </body>
