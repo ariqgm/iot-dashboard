@@ -287,7 +287,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
-  <script src="socket.io/socket.io.js"></script>
+  <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const socket = io();
@@ -349,102 +349,58 @@
         }
     });
 
-      navLinks.forEach(link => {
+    navLinks.forEach(link => {
         link.addEventListener('click', function() {
           navLinks.forEach(nav => nav.classList.remove('active'));
           this.classList.add('active');
         });
-      });
+    });
 
-      console.log('Connecting to socket.io...');
+    console.log('Connecting to socket.io...');
 
-      socket.on('connect', () => {
+    socket.on('connect', () => {
         console.log('Connected to socket.io server');
-      });
+    });
 
     socket.on('mqttDataStatusDaya', function (message) {
-    console.log('Received data:', message);
-    const { topic, data } = message;
-    var test = data;
-    console.log('Data received:', data);
+        console.log('Received data:', message);
+        const { topic, data } = message;
 
-    if (!data) {
-        console.error('Data is undefined');
-        return;
-    }
+        if (!data) {
+            console.error('Data is undefined');
+            return;
+        }
 
-    const timestamp = new Date();
-    //currentChart.data.labels.push(timestamp);
-    /*var tegangan = data.tegangan;
-    var teganganS = data.teganganS;
-    var teganganT = data.teganganT;
-    var tegline1 = data.tegline1;
-    var tegline2 = data.tegline2;
-    var tegline3 = data.tegline3;
-    var arus = data.arus;
-    var arusS = data.arusS;
-    var arusT = data.arusT;
-    var powerFactorR = data.powerFactorR;
-    var powerFactorS = data.powerFactorS;
-    var powerFactorT = data.powerFactorT;
-    var dayaaktif = data.dayaaktif;
-    var dayareaktif = data.dayareaktif;
-    var freqR = data.freqR;
-    var freqS = data.freqS;
-    var freqT = data.freqT;
-    var energi = data.energi;
-    var kwH = data.kwH;
-    var tagihan = data.tagihan;
-    console.log(tegangan);
-    console.log(teganganS);
-    console.log(teganganT);
-    console.log(tegline1);
-    console.log(tegline2);
-    console.log(tegline3);
-    console.log(arus);
-    console.log(arusS);
-    console.log(arusT);
-    console.log(dayaaktif);
-    console.log(dayareaktif);
-    console.log(freqR);
-    console.log(freqS);
-    console.log(freqT);
-    
-    console.log(energi);
-    console.log(kwH);
-    console.log(tagihan);
-    console.log(powerFactorR);
-    console.log(powerFactorS);
-    console.log(powerFactorT);*/
-    //console.log(datasets);
-      switch (topic) {
+        const timestamp = new Date();
+
+        switch (topic) {
             case 'Status_Daya_Beban_Listrik/part1':
-              document.getElementById('tegangan').innerText = `${data.tegangan} V`;
-              document.getElementById('teganganS').innerText = `${data.teganganS} V`;
-              document.getElementById('teganganT').innerText = `${data.teganganT} V`;
-              break;
+                document.getElementById('tegangan').innerText = `${data.tegangan} V`;
+                document.getElementById('teganganS').innerText = `${data.teganganS} V`;
+                document.getElementById('teganganT').innerText = `${data.teganganT} V`;
+                break;
             case 'Status_Daya_Beban_Listrik/part2':
-              document.getElementById('tegline1').innerText = `${data.tegline1} V`;
-              document.getElementById('tegline2').innerText = `${data.tegline2} V`;
-              document.getElementById('tegline3').innerText = `${data.tegline3} V`;
-              break;
+                document.getElementById('tegline1').innerText = `${data.tegline1} V`;
+                document.getElementById('tegline2').innerText = `${data.tegline2} V`;
+                document.getElementById('tegline3').innerText = `${data.tegline3} V`;
+                break;
             case 'Status_Daya_Beban_Listrik/part3':
-              document.getElementById('arus').innerText = `${data.arus} A`;
-              document.getElementById('arusS').innerText = `${data.arusS} A`;
-              document.getElementById('arusT').innerText = `${data.arusT} A`;
-              break;
+                document.getElementById('arus').innerText = `${data.arus} A`;
+                document.getElementById('arusS').innerText = `${data.arusS} A`;
+                document.getElementById('arusT').innerText = `${data.arusT} A`;
+                break;
             case 'Status_Daya_Beban_Listrik/part4':
-              document.getElementById('powerFactorR').innerText = data.powerFactorR;
-              document.getElementById('powerFactorS').innerText = data.powerFactorS;
-              document.getElementById('powerFactorT').innerText = data.powerFactorT;
-              break;
+                document.getElementById('powerFactorR').innerText = data.powerFactorR;
+                document.getElementById('powerFactorS').innerText = data.powerFactorS;
+                document.getElementById('powerFactorT').innerText = data.powerFactorT;
+                break;
             case 'Status_Daya_Beban_Listrik/part5':
-              document.getElementById('dayaaktif').innerText = `${data.dayaaktif} kW`;
-              document.getElementById('dayareaktif').innerText = `${data.dayareaktif} kVAR`;
-              document.getElementById('freqR').innerText = `${data.freqR} Hz`;
-              document.getElementById('freqS').innerText = `${data.freqS} Hz`;
-              document.getElementById('freqT').innerText = `${data.freqT} Hz`;
-              break;
+                document.getElementById('dayaaktif').innerText = `${data.dayaaktif} kW`;
+                document.getElementById('dayareaktif').innerText = `${data.dayareaktif} kVAR`;
+                document.getElementById('freqR').innerText = `${data.freqR} Hz`;
+                document.getElementById('freqS').innerText = `${data.freqS} Hz`;
+                document.getElementById('freqT').innerText = `${data.freqT} Hz`;
+                break;
             case 'Status_Daya_Beban_Listrik/part6':
                 kwhChart.data.labels.push(timestamp);
                 energiChart.data.labels.push(timestamp);
@@ -460,26 +416,9 @@
                 console.warn('Unknown topic:', topic);
         }
     });
-    const savedKwhData = localStorage.getItem('kwhChartData');
-    const savedEnergiData = localStorage.getItem('energiChartData');
 
-    if (savedKwhData && savedEnergiData) {
-        const parsedKwhData = JSON.parse(savedKwhData);
-        const parsedEnergiData = JSON.parse(savedEnergiData);
-        kwhChart.data = parsedKwhData;
-        energiChart.data = parsedEnergiData;
-        kwhChart.update();
-        energiChart.update();
-    }
-
-    setInterval(() => {
-        localStorage.setItem('kwhChartData', JSON.stringify(kwhChart.data));
-        localStorage.setItem('energiChartData', JSON.stringify(energiChart.data));
-    }, 5000);
-});
-
-
-      socket.on('requesthistoryStatusListrikData', function(data) {
+    socket.on('requesthistoryStatusListrikData', function(data) {
+        console.log('Received history data:', data); 
         const historyTable = document.getElementById('historyData');
         historyTable.innerHTML = ''; // Clear existing data
         data.forEach(row => {
@@ -509,22 +448,25 @@
           `;
           historyTable.appendChild(tr);
         });
-      });
+    });
 
-      socket.on('disconnect', () => {
+    socket.on('disconnect', () => {
         console.log('Disconnected from socket.io server');
-      });
+    });
 
-      function updateClock() {
+    function updateClock() {
         const now = new Date();
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
         clockElement.textContent = `${hours}:${minutes}:${seconds}`;
-      }
-
-      const savedData = localStorage.getItem('currentChartData');
-      if (savedData) {
+    }
+    
+    setInterval(updateClock, 1000);
+    updateClock(); // Initial call to display clock immediately
+    
+    const savedData = localStorage.getItem('currentChartData');
+    if (savedData) {
         const parsedData = JSON.parse(savedData);
         const fifteenMinutesAgo = Date.now() - 15 * 60 * 1000;
 
@@ -536,15 +478,16 @@
 
         currentChart.data = parsedData;
         currentChart.update();
-      }
+    }
 
-      setInterval(updateClock, 1000);
-      updateClock(); // Initial call to display clock immediately
+    setInterval(updateClock, 1000);
+    updateClock(); // Initial call to display clock immediately
 
-      // Fetch history data periodically
-      setInterval(() => {
+    // Fetch history data periodically
+    setInterval(() => {
         socket.emit('requesthistoryStatusListrikData');
-      }, 5000); // every 5 seconds
+    }, 5000); // every 5 seconds
+  });
   </script>
 </body>
 </html>

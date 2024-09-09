@@ -39,7 +39,7 @@
   let lastDimmerValue = 0; // Inisialisasi nilai dimmer terakhir
   let lampStatus = false;
   // Konfigurasi MQTT
-  const mqttClient = mqtt.connect('http://192.168.42.106:1883', {
+  const mqttClient = mqtt.connect('http://192.168.100.72:1883', {
     username: 'ariq',
     password: '1234'
   });
@@ -122,6 +122,7 @@
         if (err) {
           console.error('Failed to fetch history data:', err);
         } else {
+          console.log('Sending history data:', results);
           socket.emit('requesthistoryStatusListrikData', results);
         }
       });
