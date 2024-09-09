@@ -419,19 +419,19 @@
     //console.log(datasets);
       switch (topic) {
             case 'Status_Daya_Beban_Listrik/part1':
-              document.getElementById('tegangan').innerText = `${data.tegangan} V`;
-              document.getElementById('teganganS').innerText = `${data.teganganS} V`;
-              document.getElementById('teganganT').innerText = `${data.teganganT} V`;
+              document.getElementById('tegangan').innerText = ${data.tegangan} V;
+              document.getElementById('teganganS').innerText = ${data.teganganS} V;
+              document.getElementById('teganganT').innerText = ${data.teganganT} V;
               break;
             case 'Status_Daya_Beban_Listrik/part2':
-              document.getElementById('tegline1').innerText = `${data.tegline1} V`;
-              document.getElementById('tegline2').innerText = `${data.tegline2} V`;
-              document.getElementById('tegline3').innerText = `${data.tegline3} V`;
+              document.getElementById('tegline1').innerText = ${data.tegline1} V;
+              document.getElementById('tegline2').innerText = ${data.tegline2} V;
+              document.getElementById('tegline3').innerText = ${data.tegline3} V;
               break;
             case 'Status_Daya_Beban_Listrik/part3':
-              document.getElementById('arus').innerText = `${data.arus} A`;
-              document.getElementById('arusS').innerText = `${data.arusS} A`;
-              document.getElementById('arusT').innerText = `${data.arusT} A`;
+              document.getElementById('arus').innerText = ${data.arus} A;
+              document.getElementById('arusS').innerText = ${data.arusS} A;
+              document.getElementById('arusT').innerText = ${data.arusT} A;
               break;
             case 'Status_Daya_Beban_Listrik/part4':
               document.getElementById('powerFactorR').innerText = data.powerFactorR;
@@ -439,11 +439,11 @@
               document.getElementById('powerFactorT').innerText = data.powerFactorT;
               break;
             case 'Status_Daya_Beban_Listrik/part5':
-              document.getElementById('dayaaktif').innerText = `${data.dayaaktif} kW`;
-              document.getElementById('dayareaktif').innerText = `${data.dayareaktif} kVAR`;
-              document.getElementById('freqR').innerText = `${data.freqR} Hz`;
-              document.getElementById('freqS').innerText = `${data.freqS} Hz`;
-              document.getElementById('freqT').innerText = `${data.freqT} Hz`;
+              document.getElementById('dayaaktif').innerText = ${data.dayaaktif} kW;
+              document.getElementById('dayareaktif').innerText = ${data.dayareaktif} kVAR;
+              document.getElementById('freqR').innerText = ${data.freqR} Hz;
+              document.getElementById('freqS').innerText = ${data.freqS} Hz;
+              document.getElementById('freqT').innerText = ${data.freqT} Hz;
               break;
             case 'Status_Daya_Beban_Listrik/part6':
                 kwhChart.data.labels.push(timestamp);
@@ -452,9 +452,9 @@
                 energiChart.data.datasets[0].data.push({ x: timestamp, y: data.energi });
                 kwhChart.update();
                 energiChart.update();
-                document.getElementById('kwH').innerText = `${data.kwH} kWh`;
-                document.getElementById('energi').innerText = `${data.energi} kWh`;
-                document.getElementById('tagihan').innerText = `${data.tagihan} IDR`;
+                document.getElementById('kwH').innerText = ${data.kwH} kWh;
+                document.getElementById('energi').innerText = ${data.energi} kWh;
+                document.getElementById('tagihan').innerText = ${data.tagihan} IDR;
                 break;
             default:
                 console.warn('Unknown topic:', topic);
@@ -520,7 +520,7 @@
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
-        clockElement.textContent = `${hours}:${minutes}:${seconds}`;
+        clockElement.textContent = ${hours}:${minutes}:${seconds};
       }
 
       const savedData = localStorage.getItem('currentChartData');
