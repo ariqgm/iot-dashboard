@@ -291,7 +291,6 @@
       const kWhCtx = document.getElementById('kWhChart').getContext('2d');
       const energyCtx = document.getElementById('energyChart').getContext('2d');
 
-      // Initialize the new kWh and Energi charts
       let kWhChart = new Chart(kWhCtx, {
         type: 'line',
         data: {
@@ -357,32 +356,101 @@
       setInterval(updateClock, 1000);
       updateClock(); // Initial call to display clock immediately
 
-      // Update real-time data and the new charts
+      // Real-time data handling for charts and data boxes
       socket.on('mqttDataStatusDaya', function (message) {
+        console.log('Received data from server:', message);
         const { topic, data } = message;
-        const timestamp = new Date();
 
-        // Add data to the charts for kWh and Energi
-        if (topic === 'Status_Daya_Beban_Listrik/part6') {
-          kWhChart.data.labels.push(timestamp);
-          kWhChart.data.datasets[0].data.push({ x: timestamp, y: data.kwH });
-
-          energyChart.data.labels.push(timestamp);
-          energyChart.data.datasets[0].data.push({ x: timestamp, y: data.energi });
-
-          // Limit data to last 15 minutes
-          const fifteenMinutesAgo = Date.now() - 15 * 60 * 1000;
-          kWhChart.data.labels = kWhChart.data.labels.filter(label => new Date(label).getTime() > fifteenMinutesAgo);
-          kWhChart.data.datasets[0].data = kWhChart.data.datasets[0].data.filter(dataPoint => new Date(dataPoint.x).getTime() > fifteenMinutesAgo);
-
-          energyChart.data.labels = energyChart.data.labels.filter(label => new Date(label).getTime() > fifteenMinutesAgo);
-          energyChart.data.datasets[0].data = energyChart.data.datasets[0].data.filter(dataPoint => new Date(dataPoint.x).getTime() > fifteenMinutesAgo);
-
-          kWhChart.update();
-          energyChart.update();
+        if (!data) {
+            console.error('Data is undefined');
+            return;
         }
+
+        const timestamp = new Date();
+        console.log('Received data:', data);
+        currentChart.data.labels.push(timestamp);
+
+        switch (topic) {
+            case 'Status_Daya_Beban_Listrik/part1':
+                datasets[0].data.push({ x: timestamp, y: data.tegangan });
+                datasets[1].data.push({ x: timestamp, y: data.teganganS });
+                datasets[2].data.push({ x: timestamp, y: data.teganganT });
+
+                // Display real-time data in text boxes
+                document.getElementById('tegangan').innerText = `${data.tegangan} V`;
+                document.getElementById('teganganS').innerText = `${data.teganganS} V`;
+                document.getElementById('teganganT').innerText = `${data.teganganT} V`;
+                break;
+            case 'Status_Daya_Beban_Listrik/part2':
+                datasets[3].data.push({ x: timestamp, y: data.tegline1 });
+                datasets[4].data.push({ x: timestamp, y: data.tegline2 });
+                datasets[5].data.push({ x: timestamp, y: data.tegline3 });
+
+                // Display real-time data in text boxes
+                document.getElementById('tegline1').innerText = `${data.tegline1} V`;
+                document.getElementById('tegline2').innerText = `${data.tegline2} V`;
+                document.getElementById('tegline3').innerText = `${data.tegline3} V`;
+                break;
+            case 'Status_Daya_Beban_Listrik/part3':
+                datasets[6].data.push({ x: timestamp, y: data.arus });
+                datasets[7].data.push({ x: timestamp, y: data.arusS });
+                datasets[8].data.push({ x: timestamp, y: data.arusT });
+
+                // Display real-time data in text boxes
+                document.getElementById('arus').innerText = `${data.arus} A`;
+                document.getElementById('arusS').innerText = `${data.arusS} A`;
+                document.getElementById('arusT').innerText = `${data.arusT} A`;
+                break;
+            case 'Status_Daya_Beban_Listrik/part4':
+                datasets[9].data.push({ x: timestamp, y: data.powerFactorR });
+                datasets[10].data.push({ x: timestamp, y: data.powerFactorS });
+                datasets[11].data.push({ x: timestamp, y: data.powerFactorT });
+
+                // Display real-time data in text boxes
+                document.getElementById('powerFactorR').innerText = data.powerFactorR;
+                document.getElementById('powerFactorS').innerText = data.powerFactorS;
+                document.getElementById('powerFactorT').innerText = data.powerFactorT;
+                break;
+            case 'Status_Daya_Beban_Listrik/part5':
+                datasets[12].data.push({ x: timestamp, y: data.dayaaktif });
+                datasets[13].data.push({ x: timestamp, y: data.dayareaktif });
+                datasets[14].data.push({ x: timestamp, y: data.freqR });
+                datasets[15].data.push({ x: timestamp, y: data.freqS });
+                datasets[16].data.push({ x: timestamp, y: data.freqT });
+
+                // Display real-time data in text boxes
+                document.getElementById('dayaaktif').innerText = `${data.dayaaktif} kW`;
+                document.getElementById('dayareaktif').innerText = `${data.dayareaktif} kVAR`;
+                document.getElementById('freqR').innerText = `${data.freqR} Hz`;
+                document.getElementById('freqS').innerText = `${data.freqS} Hz`;
+                document.getElementById('freqT').innerText = `${data.freqT} Hz`;
+                break;
+            case 'Status_Daya_Beban_Listrik/part6':
+                datasets[17].data.push({ x: timestamp, y: data.kwH });
+                datasets[18].data.push({ x: timestamp, y: data.energi });
+                datasets[19].data.push({ x: timestamp, y: data.tagihan });
+
+                // Display real-time data in text boxes
+                document.getElementById('kwH').innerText = `${data.kwH} kWh`;
+                document.getElementById('energi').innerText = `${data.energi} kWh`;
+                document.getElementById('tagihan').innerText = `${data.tagihan} IDR`;
+                break;
+            default:
+                console.warn('Unknown topic:', topic);
+        }
+
+        // Filter data older than 15 minutes
+        const fifteenMinutesAgo = Date.now() - 15 * 60 * 1000;
+        currentChart.data.labels = currentChart.data.labels.filter(label => new Date(label).getTime() > fifteenMinutesAgo);
+        currentChart.data.datasets.forEach(dataset => {
+            dataset.data = dataset.data.filter(dataPoint => new Date(dataPoint.x).getTime() > fifteenMinutesAgo);
+        });
+
+        currentChart.update();
+        localStorage.setItem('currentChartData', JSON.stringify(currentChart.data));
       });
 
+      // Request history data
       socket.on('requesthistoryStatusListrikData', function(data) {
         const historyTable = document.getElementById('historyData');
         historyTable.innerHTML = ''; // Clear existing data
