@@ -374,44 +374,46 @@
         const timestamp = new Date();
 
         switch (topic) {
-            case 'Status_Daya_Beban_Listrik/part1':
-                document.getElementById('tegangan').innerText = `${data.tegangan} V`;
-                document.getElementById('teganganS').innerText = `${data.teganganS} V`;
-                document.getElementById('teganganT').innerText = `${data.teganganT} V`;
-                break;
-            case 'Status_Daya_Beban_Listrik/part2':
-                document.getElementById('tegline1').innerText = `${data.tegline1} V`;
-                document.getElementById('tegline2').innerText = `${data.tegline2} V`;
-                document.getElementById('tegline3').innerText = `${data.tegline3} V`;
-                break;
-            case 'Status_Daya_Beban_Listrik/part3':
-                document.getElementById('arus').innerText = `${data.arus} A`;
-                document.getElementById('arusS').innerText = `${data.arusS} A`;
-                document.getElementById('arusT').innerText = `${data.arusT} A`;
-                break;
-            case 'Status_Daya_Beban_Listrik/part4':
-                document.getElementById('powerFactorR').innerText = data.powerFactorR;
-                document.getElementById('powerFactorS').innerText = data.powerFactorS;
-                document.getElementById('powerFactorT').innerText = data.powerFactorT;
-                break;
-            case 'Status_Daya_Beban_Listrik/part5':
-                document.getElementById('dayaaktif').innerText = `${data.dayaaktif} kW`;
-                document.getElementById('dayareaktif').innerText = `${data.dayareaktif} kVAR`;
-                document.getElementById('freqR').innerText = `${data.freqR} Hz`;
-                document.getElementById('freqS').innerText = `${data.freqS} Hz`;
-                document.getElementById('freqT').innerText = `${data.freqT} Hz`;
-                break;
-            case 'Status_Daya_Beban_Listrik/part6':
-                kwhChart.data.labels.push(timestamp);
-                energiChart.data.labels.push(timestamp);
-                kwhChart.data.datasets[0].data.push({ x: timestamp, y: data.kwH });
-                energiChart.data.datasets[0].data.push({ x: timestamp, y: data.energi });
-                kwhChart.update();
-                energiChart.update();
-                document.getElementById('kwH').innerText = `${data.kwH} kWh`;
-                document.getElementById('energi').innerText = `${data.energi} kWh`;
-                document.getElementById('tagihan').innerText = `${data.tagihan} IDR`;
-                break;
+
+case 'Status_Daya_Beban_Listrik/part1':
+    document.getElementById('tegangan').innerText = `${data.tegangan || 0} V`;
+    document.getElementById('teganganS').innerText = `${data.teganganS || 0} V`;
+    document.getElementById('teganganT').innerText = `${data.teganganT || 0} V`;
+    break;
+
+case 'Status_Daya_Beban_Listrik/part2':
+    document.getElementById('tegline1').innerText = `${data.tegline1 || 0} V`;
+    document.getElementById('tegline2').innerText = `${data.tegline2 || 0} V`;
+    document.getElementById('tegline3').innerText = `${data.tegline3 || 0} V`;
+    break;
+case 'Status_Daya_Beban_Listrik/part3':
+    document.getElementById('arus').innerText = `${data.arus || 0} A`;
+    document.getElementById('arusS').innerText = `${data.arusS || 0} A`;
+   document.getElementById('arusT').innerText = `${data.arusT || 0} A`;
+   break;
+case 'Status_Daya_Beban_Listrik/part4':
+    document.getElementById('powerFactorR').innerText = data.powerFactorR || 0;
+    document.getElementById('powerFactorS').innerText = data.powerFactorS || 0;
+    document.getElementById('powerFactorT').innerText = data.powerFactorT || 0;
+    break;
+case 'Status_Daya_Beban_Listrik/part5':
+    document.getElementById('dayaaktif').innerText = `${data.dayaaktif || 0} kW`;
+    document.getElementById('dayareaktif').innerText = `${data.dayareaktif || 0} kVAR`;
+    document.getElementById('freqR').innerText = `${data.freqR || 0} Hz`;
+    document.getElementById('freqS').innerText = `${data.freqS || 0} Hz`;
+    document.getElementById('freqT').innerText = `${data.freqT || 0} Hz`;
+    break;
+case 'Status_Daya_Beban_Listrik/part6':
+    kwhChart.data.labels.push(timestamp);
+    energiChart.data.labels.push(timestamp);
+    kwhChart.data.datasets[0].data.push({ x: timestamp, y: data.kwH || 0 });
+    energiChart.data.datasets[0].data.push({ x: timestamp, y: data.energi || 0 });
+    kwhChart.update();
+    energiChart.update();
+    document.getElementById('kwH').innerText = `${data.kwH || 0} kWh`;
+    document.getElementById('energi').innerText = `${data.energi || 0} kWh`;
+    document.getElementById('tagihan').innerText = `${data.tagihan || 0} IDR`;
+    break;
             default:
                 console.warn('Unknown topic:', topic);
         }
