@@ -377,6 +377,8 @@
 
       // Memanggil fungsi log date secara berkala
       setInterval(logDateNow, 1000); // Setiap 1 detik
+      setInterval(updateClock, 1000);
+      updateClock(); // Initial call to display clock immediately
 
       function convertToLocalTime(utcTime) {
         const date = new Date(utcTime);
@@ -403,7 +405,7 @@
       // Fetch history data periodically
       setInterval(() => {
         socket.emit('requesthistoryProteksiData');
-      }, 5000); // every 5 seconds
+      }, 1000); // every 5 seconds
     });
   </script>
 </body>

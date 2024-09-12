@@ -114,7 +114,7 @@
 
   <div class="content">
     <div>
-      <h1 class="mt-5" style="display: inline;">Monitoring Daya Beban Listrik</h1>
+      <h1 class="mt-5" style="display: inline;">Monitoring Sistem Daya Beban Listrik</h1>
       <div class="digital-clock" id="digitalClock" style="display: inline;"></div>
     </div>
   
@@ -125,7 +125,7 @@
           <div class="card-body text-center">
             <div class="row justify-content-center">
               <div class="col-md-2 data-box">
-                <strong>Tegangan</strong>
+                <strong>Tegangan R</strong>
                 <p id="tegangan">0 V</p>
               </div>
               <div class="col-md-2 data-box">
@@ -137,19 +137,19 @@
                 <p id="teganganT">0 V</p>
               </div>
               <div class="col-md-2 data-box">
-                <strong>Tegline 1</strong>
+                <strong>Tegline R-S</strong>
                 <p id="tegline1">0 V</p>
               </div>
               <div class="col-md-2 data-box">
-                <strong>Tegline 2</strong>
+                <strong>Tegline S-T</strong>
                 <p id="tegline2">0 V</p>
               </div>
               <div class="col-md-2 data-box">
-                <strong>Tegline 3</strong>
+                <strong>Tegline T-R</strong>
                 <p id="tegline3">0 V</p>
               </div>
               <div class="col-md-2 data-box">
-                <strong>Arus</strong>
+                <strong>Arus R</strong>
                 <p id="arus">0 A</p>
               </div>
               <div class="col-md-2 data-box">
@@ -173,11 +173,11 @@
                 <p id="powerFactorT">0</p>
               </div>
               <div class="col-md-2 data-box">
-                <strong>Daya Aktif</strong>
+                <strong>Daya Aktif 3 Phase</strong>
                 <p id="dayaaktif">0 kW</p>
               </div>
               <div class="col-md-2 data-box">
-                <strong>Daya Reaktif</strong>
+                <strong>Daya Reaktif 3 Phase</strong>
                 <p id="dayareaktif">0 kVAR</p>
               </div>
               <div class="col-md-2 data-box">
@@ -198,7 +198,7 @@
               </div>
               <div class="col-md-2 data-box">
                 <strong>Energi</strong>
-                <p id="energi">0 kWh</p>
+                <p id="energi">0 Wh</p>
               </div>
               <div class="col-md-2 data-box">
                 <strong>Tagihan</strong>
@@ -249,20 +249,20 @@
                 <thead>
                   <tr>
                     <th scope="col">Timestamp</th>
-                    <th scope="col">Tegangan</th>
+                    <th scope="col">Tegangan R</th>
                     <th scope="col">Tegangan S</th>
                     <th scope="col">Tegangan T</th>
-                    <th scope="col">Tegline 1</th>
-                    <th scope="col">Tegline 2</th>
-                    <th scope="col">Tegline 3</th>
-                    <th scope="col">Arus</th>
+                    <th scope="col">Tegline R-S</th>
+                    <th scope="col">Tegline S-T</th>
+                    <th scope="col">Tegline T-R</th>
+                    <th scope="col">Arus R</th>
                     <th scope="col">Arus S</th>
                     <th scope="col">Arus T</th>
                     <th scope="col">Power Factor R</th>
                     <th scope="col">Power Factor S</th>
                     <th scope="col">Power Factor T</th>
-                    <th scope="col">Daya Aktif</th>
-                    <th scope="col">Daya Reaktif</th>
+                    <th scope="col">Daya Aktif 3 Phase</th>
+                    <th scope="col">Daya Reaktif 3 Phase</th>
                     <th scope="col">Frekuensi R</th>
                     <th scope="col">Frekuensi S</th>
                     <th scope="col">Frekuensi T</th>
@@ -343,7 +343,7 @@
                 },
                 y: { 
                     beginAtZero: true,
-                    title: { display: true, text: 'Energi (kWh)' } 
+                    title: { display: true, text: 'Energi (Wh)' } 
                 }
             }
         }
@@ -411,7 +411,7 @@ case 'Status_Daya_Beban_Listrik/part6':
     kwhChart.update();
     energiChart.update();
     document.getElementById('kwH').innerText = `${data.kwH || 0} kWh`;
-    document.getElementById('energi').innerText = `${data.energi || 0} kWh`;
+    document.getElementById('energi').innerText = `${data.energi || 0} Wh`;
     document.getElementById('tagihan').innerText = `${data.tagihan || 0} IDR`;
     break;
             default:
@@ -484,11 +484,40 @@ case 'Status_Daya_Beban_Listrik/part6':
 
     setInterval(updateClock, 1000);
     updateClock(); // Initial call to display clock immediately
+      // Fungsi untuk mengonversi UTC ke waktu lokal (WIB)
+    function convertToLocalTime(utcTime) {
+      const date = new Date(utcTime);
+      const options = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZone: 'Asia/Jakarta',
+      };
 
+      // Mengonversi waktu ke WIB
+      const formattedDate = date.toLocaleString('id-ID', options);
+      
+      // Mendapatkan milidetik secara manual
+      const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
+
+      // Menggabungkan hasil dengan milidetik
+      return `${formattedDate}:${milliseconds}`;
+}
+
+       // Fungsi baru untuk log waktu sesuai dengan UTC+7 (WIB)
+    const logDateNow = () => {
+      const date = new Date();
+      const utcOffset = 7 * 60 * 60 * 1000; // UTC+7 (WIB)
+      const indonesiaTime = new Date(date.getTime() + utcOffset);
+      console.log("Current Date and Time (WIB):", indonesiaTime.toISOString().replace("T", " ").split(".")[0]);
+    };
     // Fetch history data periodically
     setInterval(() => {
         socket.emit('requesthistoryStatusListrikData');
-    }, 5000); // every 5 seconds
+    }, 1000); // every 5 seconds
   });
   </script>
 </body>

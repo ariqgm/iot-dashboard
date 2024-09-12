@@ -160,11 +160,11 @@
                 <p id="mq2Value">0</p>
               </div>
               <div class="data-box" id="roomDoorStatusBox">
-                <strong>Status Pintu Kamar</strong>
+                <strong>Status Room Door</strong>
                 <p id="roomDoorStatus">Unknown</p>
               </div>
               <div class="data-box" id="mainDoorStatusBox">
-                <strong>Status Pintu Utama</strong>
+                <strong>Status Main Door</strong>
                 <p id="mainDoorStatus">Unknown</p>
               </div>
               <div class="data-box">
@@ -274,11 +274,11 @@
       if (status) {
         button.classList.remove('btn-primary');
         button.classList.add('btn-danger');
-        button.textContent = buttonId === 'roomLockBtn' ? 'Room Lock ON' : 'Main Lock ON';
+        button.textContent = buttonId === 'roomLockBtn' ? 'Room Lock Lock' : 'Main Lock Lock';
       } else {
         button.classList.remove('btn-danger');
         button.classList.add('btn-success');
-        button.textContent = buttonId === 'roomLockBtn' ? 'Room Lock OFF' : 'Main Lock OFF';
+        button.textContent = buttonId === 'roomLockBtn' ? 'Room Lock Unlock' : 'Main Lock Unlock';
       }
     }
 
@@ -334,7 +334,9 @@
         historyTable.appendChild(tr);
       });
     });
-
+    
+    setInterval(updateClock, 1000);
+    updateClock(); // Initial call to display clock immediately
     // Fungsi untuk mengonversi UTC ke waktu lokal (WIB)
     function convertToLocalTime(utcTime) {
       const date = new Date(utcTime);
@@ -361,7 +363,7 @@
     // Fetch history data periodically
     setInterval(() => {
       socket.emit('requesthistorySmarthomeData');
-    }, 5000); // every 5 seconds
+    }, 1000); // every 5 seconds
 
     // Fungsi baru untuk log waktu sesuai dengan UTC+7 (WIB)
     const logDateNow = () => {
