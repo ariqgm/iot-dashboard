@@ -148,7 +148,7 @@
               </div>
               <div class="row justify-content-center mt-4">
                   <div class="col-md-2">
-                      <div id="relayStatusBox" class="relay-status">NORMAL</div>
+                      <div id="relayStatusBox" class="relay-status">OFF</div>
                   </div>
               </div>
           </div>
@@ -282,6 +282,9 @@
           // Update relay status box
           relayStatusBox.innerText = data.relay_status;
           switch(data.relay_status) {
+            case 'OFF':
+              relayStatusBox.className = 'relay-status relay-OFF';
+              break;
             case 'NORMAL':
               relayStatusBox.className = 'relay-status relay-normal';
               break;
@@ -295,7 +298,7 @@
               relayStatusBox.className = 'relay-status relay-trip-overload';
               break;
             default:
-              relayStatusBox.className = 'relay-status relay-normal';
+              relayStatusBox.className = 'relay-status relay-OFF';
           }
         }
       });
