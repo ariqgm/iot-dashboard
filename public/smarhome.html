@@ -323,7 +323,7 @@
       data.forEach(row => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${convertToLocalTime(row.timestamp)}</td>
+          <td>${row.timestamp}</td>
           <td>${row.bedroom_door}</td>
           <td>${row.main_room_door}</td>
           <td>${row.lamp_bedroom}</td>
