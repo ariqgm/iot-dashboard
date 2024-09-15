@@ -38,6 +38,7 @@
   let mainLockStatus = false;
   let lastDimmerValue = 0; // Inisialisasi nilai dimmer terakhir
   let lampStatus = false;
+  
   // Konfigurasi MQTT
   const mqttClient = mqtt.connect('http://54.169.74.106:1883', {
     username: 'ariq',
