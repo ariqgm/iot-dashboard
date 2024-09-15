@@ -401,17 +401,7 @@
         return `${formattedDate}:${milliseconds}`;
       }
 
-        // Mengonversi waktu ke WIB
-        const formattedDate = date.toLocaleString('id-ID', options);
-        
-        // Mendapatkan milidetik secara manual
-        const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
-
-        // Menggabungkan hasil dengan milidetik
-        return `${formattedDate}:${milliseconds}`;
-}
-
-      // Fetch history data periodically
+         // Fetch history data periodically
       setInterval(() => {
         socket.emit('requesthistoryProteksiData');
       }, 1000); // every 5 seconds
