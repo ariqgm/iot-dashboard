@@ -367,39 +367,38 @@
         currentChart.update();
       }
 
-      // Fungsi log waktu UTC+7 (WIB)
-      const logDateNow = () => {
-        const date = new Date();
-        const utcOffset = 7 * 60 * 60 * 1000; // UTC+7 (WIB)
-        const indonesiaTime = new Date(date.getTime() + utcOffset);
-        console.log("Current Date and Time (WIB):", indonesiaTime.toISOString().replace("T", " ").split(".")[0]);
-      };
-
-      // Memanggil fungsi log date secara berkala
+       // Memanggil fungsi log date secara berkala
       setInterval(logDateNow, 1000); // Setiap 1 detik
       setInterval(updateClock, 1000);
       updateClock(); // Initial call to display clock immediately
 
       function convertToLocalTime(utcTime) {
-      const date = new Date(utcTime);
-      const options = {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        timeZone: 'Asia/Jakarta',  // Menggunakan zona waktu lokal (WIB)
-      };
+  // Ambil waktu dari UTC
+  const date = new Date(utcTime);
 
-        // Mengonversi ke waktu lokal dengan format Indonesia
-        const formattedDate = date.toLocaleString('id-ID', options);
-        
-        // Mendapatkan milidetik
-        const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
+  // Tambahkan offset zona waktu UTC+7 (WIB) secara manual
+  const utcOffset = 7 * 60 * 60 * 1000; // UTC+7 in milliseconds
+  const indonesiaTime = new Date(date.getTime() + utcOffset);
 
-        return `${formattedDate}:${milliseconds}`;
-      }
+  // Format tanggal dan waktu ke dalam format Indonesia
+  const options = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  };
+
+  const formattedDate = indonesiaTime.toLocaleString('id-ID', options);
+  
+  // Tambahkan milidetik secara manual
+  const milliseconds = String(indonesiaTime.getMilliseconds()).padStart(3, '0');
+
+  // Gabungkan tanggal, waktu, dan milidetik
+  return `${formattedDate}:${milliseconds}`;
+}
+
 
          // Fetch history data periodically
       setInterval(() => {
