@@ -369,7 +369,7 @@
     // Fetch history data periodically
     setInterval(() => {
       socket.emit('requesthistorySmarthomeData');
-    }, 1000); // every 5 seconds
+    }, 5000); // every 5 seconds
 
     // Memanggil fungsi log date secara berkala
     setInterval(logDateNow, 1000); // Setiap 1 detik

@@ -517,7 +517,7 @@ case 'Status_Daya_Beban_Listrik/part6':
     // Fetch history data periodically
     setInterval(() => {
         socket.emit('requesthistoryStatusListrikData');
-    }, 1000); // every 5 seconds
+    }, 5000); // every 5 seconds
   });
   </script>
 </body>
